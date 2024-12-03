@@ -1,24 +1,24 @@
 <template>
-  <div class="p-6 bg-gray-800 text-white rounded-lg shadow-lg max-w-2xl w-full">
+  <div class="bg-white rounded-lg shadow-xl p-6 w-full max-w-lg max-h-[90vh] overflow-y-auto">
     <div class="flex justify-between items-start mb-4">
-      <h2 class="text-3xl font-bold">{{ pokemon.name }}</h2>
-      <button @click="$emit('close')" class="text-gray-400 hover:text-white">
+      <h2 class="text-3xl font-bold text-gray-800">{{ pokemon.name }}</h2>
+      <button @click="$emit('close')" class="text-gray-500 hover:text-gray-700">
         <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
           <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
         </svg>
       </button>
     </div>
 
-    <div class="flex flex-col md:flex-row">
-      <div class="md:w-1/2">
-        <img :src="pokemon.sprites.front_default" :alt="pokemon.name" class="w-48 h-48 mx-auto mb-4" />
+    <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+      <div>
+        <img :src="pokemon.sprites.front_default" :alt="pokemon.name" class="w-full h-auto mb-4 mx-auto" />
         <p><strong>ID:</strong> {{ pokemon.id }}</p>
         <p><strong>Taille:</strong> {{ pokemon.height / 10 }} m</p>
         <p><strong>Poids:</strong> {{ pokemon.weight / 10 }} kg</p>
         <p><strong>Types:</strong> {{ pokemon.types.map(type => type.type.name).join(', ') }}</p>
       </div>
 
-      <div class="md:w-1/2">
+      <div>
         <h3 class="text-xl font-semibold mb-2">Statistiques:</h3>
         <ul>
           <li v-for="stat in pokemon.stats" :key="stat.stat.name">
@@ -57,11 +57,12 @@ export default {
 
       while (current) {
         evolutions.push(current);
-        current = current.evolves_to[0]; // On prend seulement la première évolution pour simplifier
+        current = current.evolves_to[0];
       }
 
       return evolutions;
     },
+
     getEvolutionSprite(evolution) {
       const id = evolution.species.url.split('/').slice(-2, -1)[0];
       return `https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/${id}.png`;

@@ -1,40 +1,27 @@
 <template>
-  <div class="flex flex-col items-center justify-start min-h-screen bg-gray-100 pt-8">
-    <h1 class="text-4xl font-bold text-gray-800 mb-4">Pokédex Interactif</h1>
+  <div class="min-h-screen bg-gray-100 p-4">
+    <h1 class="text-4xl font-bold text-center text-gray-800 mb-6">Pokédex Interactif</h1>
 
-    <div class="flex items-center mb-4">
-      <input
-        type="text"
-        v-model="searchQuery"
-        placeholder="Rechercher un Pokémon..."
-        class="p-2 border border-gray-300 rounded bg-white text-gray-800 placeholder-gray-400 w-64"
-      />
-      <button
-        @click="searchQuery = ''"
-        class="ml-2 p-2 bg-red-500 text-white rounded hover:bg-red-600"
-      >
-        Effacer
-      </button>
-    </div>
-
-    <TypeFilter
-      :types="types"
-      :selectedType="selectedType"
-      @update:selectedType="selectedType = $event"
-      class="mb-4"
-    />
-
-    <PokemonList :pokemons="filteredPokemons" @select="showDetail" />
-
-    <div v-if="selectedPokemon" class="fixed inset-0 flex items-center justify-center bg-black bg-opacity-50">
-      <PokemonDetail :pokemon="selectedPokemon" @close="closeDetail" />
-    </div>
-
-    <div v-if="error" class="fixed inset-0 flex items-center justify-center bg-black bg-opacity-50">
-      <div class="bg-white p-4 rounded-lg shadow-lg">
-        <p class="text-red-500">{{ error }}</p>
-        <button @click="error = ''" class="mt-2 p-2 bg-blue-500 text-white rounded hover:bg-blue-600">Fermer</button>
+    <div class="max-w-7xl mx-auto">
+      <div class="flex flex-col sm:flex-row justify-between items-center mb-6">
+        <input
+          type="text"
+          v-model="searchQuery"
+          placeholder="Rechercher un Pokémon..."
+          class="p-2 border border-gray-300 rounded bg-white text-gray-800 placeholder-gray-400 w-full sm:w-64 mb-4 sm:mb-0"
+        />
+        <TypeFilter
+          :types="types"
+          :selectedType="selectedType"
+          @update:selectedType="selectedType = $event"
+        />
       </div>
+
+      <PokemonList :pokemons="filteredPokemons" @select="showDetail" />
+    </div>
+
+    <div v-if="selectedPokemon" class="fixed inset-0 flex items-center justify-center bg-black bg-opacity-50 p-4">
+      <PokemonDetail :pokemon="selectedPokemon" @close="closeDetail" />
     </div>
   </div>
 </template>
@@ -58,24 +45,17 @@ export default {
     const selectedPokemon = ref(null);
     const selectedType = ref('');
     const types = ref([]);
-    const error = ref('');
 
     const fetchPokemons = async () => {
       try {
         const response = await fetch('https://pokeapi.co/api/v2/pokemon?limit=151');
-        if (!response.ok) throw new Error('Erreur lors de la récupération des Pokémon');
         const data = await response.json();
         pokemons.value = await Promise.all(data.results.map(async (pokemon, index) => {
           const detailResponse = await fetch(pokemon.url);
-          if (!detailResponse.ok) throw new Error(`Erreur lors de la récupération des détails de ${pokemon.name}`);
           const detailData = await detailResponse.json();
-
-          // Récupérer les évolutions
           const speciesResponse = await fetch(detailData.species.url);
-          if (!speciesResponse.ok) throw new Error(`Erreur lors de la récupération des espèces de ${pokemon.name}`);
           const speciesData = await speciesResponse.json();
           const evolutionChainResponse = await fetch(speciesData.evolution_chain.url);
-          if (!evolutionChainResponse.ok) throw new Error(`Erreur lors de la récupération de la chaîne d'évolution de ${pokemon.name}`);
           const evolutionChainData = await evolutionChainResponse.json();
 
           return {
@@ -89,21 +69,18 @@ export default {
             evolutions: evolutionChainData.chain,
           };
         }));
-      } catch (err) {
-        console.error(err);
-        error.value = "Une erreur est survenue lors de la récupération des données. Veuillez réessayer plus tard.";
+      } catch (error) {
+        console.error("Erreur lors de la récupération des données:", error);
       }
     };
 
     const fetchTypes = async () => {
       try {
         const response = await fetch('https://pokeapi.co/api/v2/type/');
-        if (!response.ok) throw new Error('Erreur lors de la récupération des types');
         const data = await response.json();
         types.value = data.results;
-      } catch (err) {
-        console.error(err);
-        error.value = "Une erreur est survenue lors de la récupération des types. Veuillez réessayer plus tard.";
+      } catch (error) {
+        console.error("Erreur lors de la récupération des types:", error);
       }
     };
 
@@ -111,12 +88,7 @@ export default {
       return pokemons.value.filter(pokemon => {
         const matchesSearch = pokemon.name.toLowerCase().includes(searchQuery.value.toLowerCase());
         const matchesType = selectedType.value ? pokemon.types.some(type => type.type.name === selectedType.value) : true;
-
-        if (searchQuery.value) {
-          return matchesSearch;
-        }
-
-        return matchesType;
+        return matchesSearch && matchesType;
       });
     });
 
@@ -139,7 +111,6 @@ export default {
       selectedPokemon,
       selectedType,
       types,
-      error,
       showDetail,
       closeDetail,
       filteredPokemons,
