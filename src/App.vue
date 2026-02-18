@@ -1,6 +1,6 @@
 <template>
   <div class="min-h-screen bg-[#1E293B] p-8">
-    <h1 class="text-4xl font-bold text-center text-white mb-6">
+    <h1 class="text-4xl font-bold text-center text-emerald-400 mb-6">
       Pokédex Interactif
     </h1>
 
@@ -10,7 +10,7 @@
           type="text"
           v-model="searchQuery"
           placeholder="Rechercher un Pokémon..."
-          class="p-2 border border-gray-300 rounded bg-white text-gray-800 placeholder-gray-400 w-full sm:w-64 mb-4 sm:mb-0"
+          class="p-2 border border-gray-300 rounded bg-white text-gray-800 placeholder-gray-400 w-full sm:w-64 mb-4 sm:mb-0 focus:outline-none focus:ring-2 focus:ring-emerald-400 focus:border-emerald-400"
         />
         <TypeFilter
           :types="types"

@@ -5,7 +5,7 @@
       id="type"
       :value="selectedType"
       @change="$emit('update:selectedType', $event.target.value)"
-      class="p-2 border border-gray-300 rounded bg-white text-gray-800 w-full sm:w-auto"
+      class="p-2 border border-gray-300 rounded bg-white text-gray-800 w-full sm:w-auto focus:outline-none focus:ring-2 focus:ring-emerald-400 focus:border-emerald-400"
     >
       <option value="">Tous</option>
       <option
