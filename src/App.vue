@@ -94,7 +94,8 @@ export default {
       return pokemons.value.filter((pokemon) => {
         const matchesSearch = pokemon.name
           .toLowerCase()
-          .includes(searchQuery.value.toLowerCase());
+          .toLowerCase()
+          .startsWith(searchQuery.value.toLowerCase());
         const matchesType = selectedType.value
           ? pokemon.types.some((type) => type.type.name === selectedType.value)
           : true;
